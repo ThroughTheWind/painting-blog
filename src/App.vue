@@ -2,16 +2,16 @@
   <router-view></router-view>
 </template>
 
-<script>
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator';
 
-export default {
-  name: 'App',
+@Component({
   components: {
-  },
-  data () {
-    return {
-      //
-    }
+  }
+})
+export default class App extends Vue {  
+  constructor(){
+    super();
   }
 }
 </script>
