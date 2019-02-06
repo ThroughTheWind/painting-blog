@@ -1,7 +1,7 @@
 <template>
-  <v-app :dark="layoutSettings.theme.dark.value">
+  <v-app :dark="appSettings().themeSettings.darkTheme.value">
     <v-navigation-drawer v-model="drawer" app fixed>
-      <v-toolbar :flat="layoutSettings.toolbar.flat.value">
+      <v-toolbar color="primary" :flat="appSettings().layoutSettings.flatStyle.value">
         <v-list class="pa-0">
           <v-list-tile>
             <v-list-tile-action>
@@ -28,7 +28,7 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar app fixed :flat="layoutSettings.toolbar.flat.value">
+    <v-toolbar app fixed :flat="appSettings().layoutSettings.flatStyle.value">
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title>{{ title }}</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -45,47 +45,64 @@
       </v-toolbar-items>
     </v-toolbar>
     <v-content>
+      <v-container fluid grid-list-xl="true">
+        <v-layout row wrap justify-center>
+          <v-flex mb-4 xs12 text-xs-center>
+            <h1 class="display-2 font-weight-bold mb-3">
+              Our Apps
+            </h1>
+            <p class="subheading font-weight-regular">
+              Check out the app examples we developed using VueJs and 
+              <br>Vuetify Material CSS framework !
+            </p>
+          </v-flex>
+          <v-flex v-for="appDesc in appDescriptions" :key="appDesc.id" xs3>
+            <v-card ripple>
+              <v-layout column fill-height justify-center align-space-around>
+                <v-flex xs10>
+                  <v-card-title primary-title>
+                    <div class="headline">{{ appDesc.title }}</div>
+                    
+                  </v-card-title>
+                </v-flex>
+                <v-flex xs10>
+                  <p class="pa-5">
+                      {{appDesc.description}}
+                  </p>
+                </v-flex>
+              </v-layout>
+            </v-card>
+          </v-flex>      
+        </v-layout>
+      </v-container>
       <hello-world/>
     </v-content>
-    <v-footer app></v-footer>
-    <div class="settings hidden-md-and-down">
-      <v-card id="settings-card" min-width="400px">
-        <v-card-title primary-title>
-          <div class="headline">Application Settings</div>
-        </v-card-title>
-        <v-form>
-          <v-container>
-            <v-layout row>
-              <h4 class="subheading">Theme</h4>
-              <v-switch
-                :label="layoutSettings.theme.dark.label"
-                v-model="layoutSettings.theme.dark.value"
-              ></v-switch>
-              <v-switch
-                :label="layoutSettings.toolbar.flat.label"
-                v-model="layoutSettings.toolbar.flat.value"
-              ></v-switch>
-            </v-layout>
-          </v-container>
-        </v-form>
-      </v-card>
-    </div>
+    <v-footer app>Built By ThroughTheWind</v-footer>
+
+    <app-settings/>
   </v-app>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import HelloWorld from "@/components/sections/HelloWorld.vue"; // @ is an alias to /src
+import AppSettings from "@/components/ui/app-settings/AppSettings.vue"; // @ is an alias to /src
+import { appSettingsService } from "@/components/ui/app-settings/app-settings.service"; // @ is an alias to /src
+import RandomSection from "@/components/sections/RandomSection.vue";
+
+import { getDefaultAppSettings } from "@/components/ui/app-settings/AppSettings";
 
 @Component({
   components: {
-    HelloWorld
-  }
+    HelloWorld,
+    RandomSection,
+    AppSettings,
+  },
 })
 export default class Home extends Vue {
-  title: string = "Let's Try this Framework !";
-  drawer: boolean = false;
-  appDescriptions: any[] = [
+  public title: string = "Let's Try this Framework !";
+  public drawer: boolean = false;
+  public appDescriptions: any[] = [
     {
       id: 0,
       title: "Home",
@@ -116,29 +133,16 @@ export default class Home extends Vue {
     }
   ];
 
-  layoutSettings: any = {
-    theme: {
-      dark: {
-        label: "Dark Theme",
-        value: false
-      }
-    },
-    toolbar: {
-      flat: {
-        label: "Flat Style",
-        value: true
-      }
-    }
-  };
+  constructor() {
+    super();
+  }
+
+  public appSettings() {
+    return appSettingsService.appSettings;
+  }
 
   public someMethod() {}
 }
 </script>
 
-<style>
-div.settings {
-  position: fixed;
-  right: 30px;
-  bottom: 50px;
-}
-</style>
+
